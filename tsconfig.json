@@ -3,6 +3,12 @@
   "compilerOptions": {
     "strict": true,
     "esModuleInterop": true,
-    "module": "esnext"
-  }
+    "jsx": "react-native",
+    "types": ["react", "react-native"],
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "module": "esnext",
+    "typeRoots": ["./node_modules/@types", "./declarations.d.ts"]
+  },
+  "exclude": ["node_modules", "babel.config.js"]
 }
