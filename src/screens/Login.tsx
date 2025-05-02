@@ -10,21 +10,24 @@ import {
   Platform
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import { login } from '../services/auth';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
-  const { login } = useContext(AuthContext);
+  const { authLogin } = useContext(AuthContext);
 
   const handleLogin = async () => {
-    if (email === 'admin@taskflow.com' && password === '123456') {
-      try {
-        await login('token');
-      } catch (error) {
-        Alert.alert('Erro ao fazer login:', error?.toString());
+    try {
+      const user = await login(email, password);
+      console.log('Usuário logado:', user);
+      if (user.message === 'Login successful') {
+        authLogin('token');
       }
-    } else {
-      Alert.alert('Credenciais inválidas');
+      Alert.alert('Sucesso', 'Login realizado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao fazer login:', error);
+      Alert.alert('Erro', 'Ocorreu um erro ao fazer login. Verifique suas credenciais.');
     }
   };
 
@@ -62,7 +65,7 @@ const Login: React.FC = () => {
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
-        <Text style={styles.hint}>Use: admin@taskflow.com / 123456</Text>
+        {/* <Text style={styles.hint}>Use: admin@taskflow.com / 123456</Text> */}
       </View>
     </KeyboardAvoidingView>
   );

@@ -4,13 +4,13 @@ import { Alert } from 'react-native';
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  login: (token: string) => void;
+  authLogin: (token: string) => void;
   logout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType>({
   isAuthenticated: false,
-  login: () => {},
+  authLogin: () => {},
   logout: () => {},
 });
 
@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loadToken();
   }, []);
 
-  const login = async (token: string) => {
+  const authLogin = async (token: string) => {
     try {
       await SecureStore.setItemAsync('token', token);
       setIsAuthenticated(true);
@@ -48,7 +48,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated, authLogin, logout }}>
       {children}
     </AuthContext.Provider>
   )
