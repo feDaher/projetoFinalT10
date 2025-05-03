@@ -11,10 +11,14 @@ import {
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { login } from '../services/auth';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../types/navigation';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { authLogin } = useContext(AuthContext);
 
   const handleLogin = async () => {
@@ -65,7 +69,10 @@ const Login: React.FC = () => {
           <Text style={styles.buttonText}>Entrar</Text>
         </TouchableOpacity>
 
-        {/* <Text style={styles.hint}>Use: admin@taskflow.com / 123456</Text> */}
+        <TouchableOpacity onPress={() => navigation.navigate('Signup')}>
+          <Text style={styles.link}>Não tem conta? Cadastre-se</Text>
+        </TouchableOpacity>
+
       </View>
     </KeyboardAvoidingView>
   );
@@ -111,12 +118,11 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold'
   },
-  hint: {
-    marginTop: 12,
+  link: {
     textAlign: 'center',
-    color: '#999',
-    fontSize: 12
-  }
+    color: '#246bfd',
+    marginTop: 20,
+  },
 });
 
 export default Login;
