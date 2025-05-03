@@ -7,7 +7,7 @@
     "types": ["react", "react-native"],
     "moduleResolution": "node",
     "skipLibCheck": true,
-    "module": "esnext",
+    "module": "es2022",
     "typeRoots": ["./node_modules/@types", "./declarations.d.ts"]
   },
   "include": ["./src"],
