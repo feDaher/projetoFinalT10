@@ -1,13 +1,27 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, TouchableOpacity, Text, StyleSheet, Alert } from 'react-native';
-import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import TaskService from '../services/task';
+import { CreateTaskDto } from '../types/tasks';
 
 export default function CreateTaskScreen() {
   const [title, setTitle] = useState('');
   const [subtitle, setSubtitle] = useState('');
   const [body, setBody] = useState('');
   const navigation = useNavigation();
+  const route = useRoute();
+
+  const taskId = (route.params as { id?: number })?.id;
+
+  useEffect(() => {
+    if (taskId) {
+      TaskService.getById(taskId).then(task => {
+        setTitle(task.title);
+        setSubtitle(task.subtitle || '');
+        setBody(task.body);
+      });
+    }
+  }, [taskId]);
 
   async function handleSave() {
     if (!title || !body) {
@@ -15,16 +29,23 @@ export default function CreateTaskScreen() {
       return;
     }
 
+    const dto: CreateTaskDto = {
+      title,
+      subtitle: subtitle || undefined,
+      body,
+    };
+
     try {
-      await axios.post('http://localhost:3000/tasks', {
-        title,
-        subtitle: subtitle || undefined,
-        body,
-      });
-      Alert.alert('Tarefa criada com sucesso!');
+      if (taskId) {
+        await TaskService.update(taskId, dto);
+        Alert.alert('Tarefa atualizada com sucesso!');
+      } else {
+        await TaskService.create(dto);
+        Alert.alert('Tarefa criada com sucesso!');
+      }
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Erro ao criar tarefa');
+      Alert.alert('Erro ao salvar tarefa');
       console.error(error);
     }
   }
@@ -47,7 +68,7 @@ export default function CreateTaskScreen() {
       />
 
       <TouchableOpacity style={styles.button} onPress={handleSave}>
-        <Text style={styles.buttonText}>Salvar</Text>
+        <Text style={styles.buttonText}>{taskId ? 'Atualizar' : 'Salvar'}</Text>
       </TouchableOpacity>
     </View>
   );

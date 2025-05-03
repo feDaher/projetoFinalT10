@@ -1,11 +1,11 @@
-// TaskListScreen.tsx
 import React, { useEffect, useState } from 'react';
 import { View, FlatList, Text, TouchableOpacity, StyleSheet, SafeAreaView } from 'react-native';
 import TaskCard from '../components/TaskCard';
-import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
+import TaskService from '../services/task';
+import { Alert } from 'react-native';
 
 interface Task {
   id: number;
@@ -20,21 +20,31 @@ export default function TaskListScreen() {
 
   async function fetchTasks() {
     try {
-      const response = await axios.get('http://localhost:3000/tasks');
-      setTasks(response.data);
+      const response = await TaskService.getAll();
+      setTasks(response);
     } catch (error) {
       console.error('Erro ao buscar tarefas:', error);
     }
   }
 
+  async function handleDelete(id: number) {
+    try {
+      await TaskService.delete(id);
+      fetchTasks();
+    } catch (error) {
+      Alert.alert('Erro ao excluir tarefa');
+      console.error(error);
+    }
+  }
+
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [tasks]);
 
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('CreateTask')}>
+        <TouchableOpacity style={styles.addButton} onPress={() => navigation.navigate('CreateTask', {})}>
           <Text style={styles.addButtonText}>+ Nova Tarefa</Text>
         </TouchableOpacity>
 
@@ -42,7 +52,15 @@ export default function TaskListScreen() {
           data={tasks}
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
-            <TaskCard title={item.title} subtitle={item.subtitle} body={item.body} />
+            <TouchableOpacity onPress={() => navigation.navigate('CreateTask', { id: item.id })}>
+              <TaskCard
+                id={item.id}
+                title={item.title}
+                subtitle={item.subtitle}
+                body={item.body}
+                onDelete={handleDelete}
+              />
+            </TouchableOpacity>
           )}
           contentContainerStyle={styles.listContainer}
         />

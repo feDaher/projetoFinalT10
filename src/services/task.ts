@@ -22,6 +22,11 @@ const TaskService = {
   delete: async (id: number): Promise<void> => {
     await api.delete(`${TASK_PATH}/${id}`);
   },
+
+  getById: async (id: number): Promise<Task> => {
+    const res = await api.get(`${TASK_PATH}/${id}`);
+    return res.data;
+  },
 };
 
 export default TaskService;

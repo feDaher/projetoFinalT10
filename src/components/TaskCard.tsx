@@ -1,49 +1,66 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 interface TaskCardProps {
+  id: number;
   title: string;
   subtitle?: string;
   body: string;
+  onDelete: (id: number) => void;
 }
 
-const TaskCard: React.FC<TaskCardProps> = ({ title, subtitle, body }) => {
+export default function TaskCard({ id, title, subtitle, body, onDelete }: TaskCardProps) {
+  function confirmDelete() {
+    Alert.alert(
+      'Excluir Tarefa',
+      'Tem certeza que deseja excluir esta tarefa?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Excluir', onPress: () => onDelete(id), style: 'destructive' },
+      ]
+    );
+  }
+
   return (
     <View style={styles.card}>
+      <TouchableOpacity onPress={confirmDelete} style={styles.deleteButton}>
+        <MaterialIcons name="delete" size={30} color="#246bfd" />
+      </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
       {subtitle ? <Text style={styles.subtitle}>{subtitle}</Text> : null}
       <Text style={styles.body}>{body}</Text>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
-    borderRadius: 8,
     padding: 16,
+    borderRadius: 8,
     marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
+    position: 'relative',
+  },
+  deleteButton: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    zIndex: 1,
   },
   title: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#888',
-    marginBottom: 8,
+    color: '#666',
+    marginBottom: 4,
   },
   body: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#444',
   },
 });
-
-export default TaskCard;
